@@ -53,3 +53,26 @@ func EnsureDirExists(path string) {
 		_ = os.MkdirAll(dir, 0755) // rwxr-xr-x
 	}
 }
+
+// EnsureFileWritable make file writable if not
+func EnsureFileWritable(filename string) {
+	fi, err := os.Stat(filename)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return
+		}
+	}
+	err = os.Chmod(filename, fi.Mode()|0200) // rwxr-xr-x
+	if err != nil {
+		os.IsPermission(err)
+	}
+}
+
+// IsWritable return true if file is writable
+func IsWritable(filename string) bool {
+	fi, err := os.Stat(filename)
+	if err != nil {
+		return os.IsNotExist(err)
+	}
+	return fi.Mode().Perm()&0200 != 0
+}
